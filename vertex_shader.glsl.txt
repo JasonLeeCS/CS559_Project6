@@ -1,0 +1,27 @@
+precision highp float;
+
+uniform mat3 normalMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform float time; 
+
+attribute vec3 position;
+attribute vec3 normal;
+
+varying vec3 fNormal;
+varying vec3 fPosition;
+
+void main()
+{
+    fNormal = normalize(normalMatrix * normal);
+    vec4 pos = modelViewMatrix * vec4(position, 1.0);
+
+    // Time-varying deformity
+    float maxDeformity = 0.420; // Maximum deformity
+    float deformity = maxDeformity * tan(time); // Deformity changes over time
+    float movementSpeed = 6.9; // Adjust the speed of the movement
+    pos.xyz += cos(pos.xyz * movementSpeed + time) * deformity;
+
+    fPosition = pos.xyz;
+    gl_Position = projectionMatrix * pos;
+}
